@@ -157,9 +157,78 @@ function Typpo(options) {
 
                 else {
 
-                    if (callback) {
+                    if (this.callback) {
 
                         callback();
+
+                    }
+                
+                }
+
+            }
+
+        }.bind({self: this.self, s: s, callback: callback, pos: pos}), Math.random() * this.self.slowness);
+
+    }
+
+    this.writeUncorrected = function(s, callback, pos) {
+
+        if (!pos) {
+
+            var pos = 0;
+
+        }
+
+        if (!callback) {
+
+            var callback = null;
+        }
+
+        setTimeout(function() {
+
+            var c = this.s.substr(this.pos, 1);
+
+            if (this.self.errorTable.hasOwnProperty(c) && this.self.probability > Math.random()) {
+
+                this.self.pressKey(this.self.errorTable[c][Math.floor(Math.random() * this.self.errorTable[c].length)]);
+
+                this.pos += 1;
+
+                if (this.pos <= this.s.length) {
+
+                	this.self.writeUncorrected(this.s, this.callback, this.pos);
+                
+                }
+
+                else {
+
+                	if (this.callback) {
+
+                		this.callback();
+
+                	}
+                
+                }
+
+            }
+
+            else {
+
+                this.self.pressKey(c);
+
+                this.pos += 1;
+
+                if (this.pos <= this.s.length) {
+
+                    this.self.writeUncorrected(this.s, this.callback, this.pos);
+                
+                }
+
+                else {
+
+                    if (this.callback) {
+
+                        this.callback();
 
                     }
                 
