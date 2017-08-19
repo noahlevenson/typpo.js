@@ -1,5 +1,12 @@
-//typpo.js
-//by noah levenson
+/*
+*
+*	typpo.js
+*	A JavaScript library for procedurally animating imperfect typing
+*	by Noah Levenson
+*	
+*	https://github.com/noahlevenson/typpo.js
+*
+*/
 
 function Typpo(options) {
 
