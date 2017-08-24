@@ -240,7 +240,7 @@ function Typpo(options) {
 
     }
 
-    this.enter = function(n) {
+    this.enter = function(n, callback) {
 
         if (n && n > 1) {
 
@@ -256,6 +256,12 @@ function Typpo(options) {
 
             this.destination.innerHTML = this.destination.innerHTML + "<br>";
 
+        }
+
+        if (callback) {
+
+            callback();
+            
         }
   
     }
