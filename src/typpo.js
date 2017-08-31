@@ -12,6 +12,8 @@ function Typpo(options) {
 
     this.self = this;
 
+    this.q = [];
+
 	this.speed = 0;
 
 	this.badness = 0;
@@ -106,6 +108,103 @@ function Typpo(options) {
 
 	}
 
+    this.newWrite = function(s) {
+
+        this.q[this.q.length] = new Promise(function(resolve, reject) {
+
+            // if the queue is empty, we can execute the write task immediately
+            if (this.self.q.length === 0) {
+
+                doWrite(this.self, this.s, 0);
+            }
+
+            // if the queue has other tasks in it, we need to add this task to the then() 
+            // method of the last task in the queue
+            else if (this.self.q.length > 0) {
+
+                this.self.q[this.self.q.length - 1].then(function() {
+
+                    doWrite(this.self, this.s, 0);
+
+                }.bind({self: this.self, s: s}));
+            }
+
+            function doWrite(self, s, pos) {
+
+                setTimeout(function() {
+
+                    // c is the character we're gonna type
+                    var c = this.s.substr(this.pos, 1);
+
+                    // if our desired character has an entry in the error table and the randomizer hits, 
+                    // let's type a randomized wrong character
+                    if (this.self.errorTable.hasOwnProperty(c) && this.self.probability > Math.random()) {
+
+                        this.self.pressKey(this.self.errorTable[c][Math.floor(Math.random() * this.self.errorTable[c].length)]);
+
+                        // now let's wait for a duration, backspace the mistake, and recurse doWrite to
+                        // try again
+                        setTimeout(function() {
+
+                            var html = this.self.destination.innerHTML;
+
+                            window.requestAnimationFrame(function() {
+
+                                this.self.destination.innerHTML = html.substr(0, html.length - 1);
+
+                                doWrite(this.self, this.s, this.pos);
+
+                            }.bind({self: this.self, s: this.s, pos: this.pos}));
+
+                        }.bind({self: this.self, s: this.s, pos: this.pos}), Math.random() * this.self.backspaceSlowness);
+
+                    }
+
+                    // otherwise, let's type the correct character, advance the position in our
+                    // string and recurse to do it again
+                    else {
+
+                        this.self.pressKey(c);
+
+                        this.pos += 1;
+
+                        if (this.pos <= this.s.length) {
+
+                            doWrite(this.self, this.s, this.pos);
+                
+                        }
+
+                        // here's where we've reached the end of the string, so we resolve the promise
+                        else {
+
+                            resolve();
+                            console.log("we done here");
+                
+                        }
+
+                    }
+
+                }.bind({self: self, s: s, pos: pos}), Math.random() * self.slowness);
+
+            
+            }
+
+        }.bind({self: this.self, s: s}));
+
+
+    }
+
+
+
+
+
+
+
+
+
+
+
+
     this.write = function(s, callback, pos) {
 
         if (!pos) {
@@ -117,6 +216,18 @@ function Typpo(options) {
         if (!callback) {
 
             var callback = null;
+        }
+
+
+        // there are still tasks to complete in the queue, so let's add this write task as a method of the last queued task
+        if (q.length > 0) {
+
+            q[q.length - 1].then(function() {
+
+                this.write(s, callback, pos);
+
+            });
+
         }
 
         setTimeout(function() {
