@@ -110,6 +110,9 @@ function Typpo(options) {
 
     this.write = function(s) {
 
+    	// todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
+    	// which is subject to change as the tasks ahead of it are shifted out of the q array - note that we also
+    	// bind it to the promise (way down below)
         var taskIndex = this.q.length;
 
         this.q[taskIndex] = new Promise(function(resolve, reject) {
@@ -202,77 +205,92 @@ function Typpo(options) {
     }
 
     // TODO: this needs to be rewritten to use the new async task queue
-    this.writeUncorrected = function(s, callback, pos) {
+    this.writeUncorrected = function(s) {
 
-        if (!pos) {
+    	// todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
+    	// which is subject to change as the tasks ahead of it are shifted out of the q array - note that we also
+    	// bind it to the promise (way down below)
+        var taskIndex = this.q.length;
 
-            var pos = 0;
+        this.q[taskIndex] = new Promise(function(resolve, reject) {
 
-        }
+            var taskIndex = this.taskIndex;
 
-        if (!callback) {
+            // if the queue is empty, we can execute the write task immediately
+            if (this.self.q.length === 0) {
 
-            var callback = null;
-        }
-
-        setTimeout(function() {
-
-            var c = this.s.substr(this.pos, 1);
-
-            if (this.self.errorTable.hasOwnProperty(c) && this.self.probability > Math.random()) {
-
-                this.self.pressKey(this.self.errorTable[c][Math.floor(Math.random() * this.self.errorTable[c].length)]);
-
-                this.pos += 1;
-
-                if (this.pos <= this.s.length) {
-
-                	this.self.writeUncorrected(this.s, this.callback, this.pos);
-                
-                }
-
-                else {
-
-                	if (this.callback) {
-
-                		this.callback();
-
-                	}
-                
-                }
-
+                doWriteUncorrected(this.self, this.s, 0);
             }
 
-            else {
+            // if the queue has other tasks in it, we need to add this task to the then() 
+            // method of the last task in the queue
+            else if (this.self.q.length > 0) {
 
-                this.self.pressKey(c);
+                this.self.q[this.self.q.length - 1].then(function() {
 
-                this.pos += 1;
+                    doWriteUncorrected(this.self, this.s, 0);
 
-                if (this.pos <= this.s.length) {
+                }.bind({self: this.self, s: s}));
+            }
 
-                    this.self.writeUncorrected(this.s, this.callback, this.pos);
-                
-                }
+            function doWriteUncorrected(self, s, pos) {
 
-                else {
+                setTimeout(function() {
 
-                    if (this.callback) {
+                    // c is the character we're gonna type
+                    var c = this.s.substr(this.pos, 1);
 
-                        this.callback();
+                    // if our desired character has an entry in the error table and the randomizer hits, 
+                    // let's type a randomized wrong character
+                    if (this.self.errorTable.hasOwnProperty(c) && this.self.probability > Math.random()) {
+
+                        this.self.pressKey(this.self.errorTable[c][Math.floor(Math.random() * this.self.errorTable[c].length)]);
 
                     }
+
+                    // otherwise, let's type the correct character, advance the position in our
+                    // string and recurse to do it again
+                    else {
+
+                        this.self.pressKey(c);
+
+                    }
+
+                    // advance our position in the string
+					this.pos += 1;
+
+					// if we've got more string to type, recurse the function
+                    if (this.pos <= this.s.length) {
+
+                    	doWriteUncorrected(this.self, this.s, this.pos);
                 
-                }
+                    }
+
+                    // or if we've reached the end of the string, we resolve the promise
+                    // and shift it out of the task queue
+                    else {
+
+                        resolve();
+                            
+                        this.self.q.shift();
+
+                        console.log("Completed writeUncorrected task at index " + taskIndex + ". Task queue is now " + this.self.q.length + " items long.");
+                        
+                    }
+
+                }.bind({self: self, s: s, pos: pos}), Math.random() * self.slowness);
 
             }
 
-        }.bind({self: this.self, s: s, callback: callback, pos: pos}), Math.random() * this.self.slowness);
-
+        }.bind({self: this.self, s: s, taskIndex: taskIndex}));
+        
     }
 
     this.enter = function(n) {
 
+    	// todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
+    	// which is subject to change as the tasks ahead of it are shifted out of the q array - note that we also
+    	// bind it to the promise (way down below)
         var taskIndex = this.q.length;
 
         this.q[taskIndex] = new Promise(function(resolve, reject) {
