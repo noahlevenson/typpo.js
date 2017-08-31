@@ -182,7 +182,7 @@ function Typpo(options) {
                         }
 
                         // here's where we've reached the end of the string, so we resolve the promise
-                        // and pop it out of the task queue
+                        // and shift it out of the task queue
                         else {
 
                             resolve();
@@ -204,7 +204,6 @@ function Typpo(options) {
 
     }
 
-    // TODO: this needs to be rewritten to use the new async task queue
     this.writeUncorrected = function(s) {
 
     	// todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
@@ -297,7 +296,7 @@ function Typpo(options) {
 
             var taskIndex = this.taskIndex;
 
-            // if the queue is empty, we can execute the write task immediately
+            // if the queue is empty, we can execute the enter task immediately
             if (this.self.q.length === 0) {
 
                 doEnter(this.self, this.n);
@@ -343,6 +342,70 @@ function Typpo(options) {
             }
 
         }.bind({self: this.self, n: n, taskIndex: taskIndex}));
+
+    }
+
+    this.backspaceAll = function() {
+
+    	// todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
+    	// which is subject to change as the tasks ahead of it are shifted out of the q array - note that we also
+    	// bind it to the promise (way down below)
+        var taskIndex = this.q.length;
+
+        this.q[taskIndex] = new Promise(function(resolve, reject) {
+
+        	var taskIndex = this.taskIndex;
+
+        	 // if the queue is empty, we can execute the backspaceAll task immediately
+            if (this.self.q.length === 0) {
+
+                doBackspaceAll(this.self);
+            
+            }
+
+            // if the queue has other tasks in it, we need to add this task to the then() 
+            // method of the last task in the queue
+            else if (this.self.q.length > 0) {
+
+                this.self.q[this.self.q.length - 1].then(function() {
+
+                    doBackspaceAll(this.self);
+
+                }.bind({self: this.self}));
+            
+            }
+
+            function doBackspaceAll(self) {
+
+            	setTimeout(function() {
+
+            		// remove the last character from the element
+            		self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+
+            		// if there's more to backspace, recurse the function
+            		if (self.destination.innerHTML.length > 0) {
+
+            			doBackspaceAll(this.self);
+
+            		}
+
+            		// if there's no more to backspace, resolve the promise and shift 
+            		// the task out of the queue
+            		else {
+
+	            		resolve();
+	                            
+	                	self.q.shift();
+
+	                	console.log("Completed backspaceAll task at index " + taskIndex + ". Task queue is now " + self.q.length + " items long.");
+
+                	}
+
+            	}.bind({self: self}), 100);
+
+            }
+
+        }.bind({self: this.self, taskIndex: taskIndex}));
 
     }
 
