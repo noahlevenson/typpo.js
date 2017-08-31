@@ -345,7 +345,7 @@ function Typpo(options) {
 
     }
 
-    this.backspaceAll = function() {
+    this.backspaceAll = function(ttl) {
 
     	// todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
     	// which is subject to change as the tasks ahead of it are shifted out of the q array - note that we also
@@ -359,7 +359,12 @@ function Typpo(options) {
         	 // if the queue is empty, we can execute the backspaceAll task immediately
             if (this.self.q.length === 0) {
 
-                doBackspaceAll(this.self);
+            	setTimeout(function() {
+
+            		doBackspaceAll(this.self);
+
+            	}.bind({self: this.self}), ttl);
+                
             
             }
 
@@ -369,7 +374,11 @@ function Typpo(options) {
 
                 this.self.q[this.self.q.length - 1].then(function() {
 
-                    doBackspaceAll(this.self);
+                	setTimeout(function() {
+
+                		doBackspaceAll(this.self);
+
+                	}.bind({self: this.self}), ttl);
 
                 }.bind({self: this.self}));
             
@@ -405,7 +414,7 @@ function Typpo(options) {
 
             }
 
-        }.bind({self: this.self, taskIndex: taskIndex}));
+        }.bind({self: this.self, ttl: ttl, taskIndex: taskIndex}));
 
     }
 
