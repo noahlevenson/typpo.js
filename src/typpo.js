@@ -108,9 +108,13 @@ function Typpo(options) {
 
 	}
 
-    this.newWrite = function(s) {
+    this.write = function(s) {
 
-        this.q[this.q.length] = new Promise(function(resolve, reject) {
+        var taskIndex = this.q.length;
+
+        this.q[taskIndex] = new Promise(function(resolve, reject) {
+
+            var taskIndex = this.taskIndex;
 
             // if the queue is empty, we can execute the write task immediately
             if (this.self.q.length === 0) {
@@ -175,11 +179,14 @@ function Typpo(options) {
                         }
 
                         // here's where we've reached the end of the string, so we resolve the promise
+                        // and pop it out of the task queue
                         else {
 
                             resolve();
-                            console.log("we done here");
-                
+                            
+                            this.self.q.pop(taskIndex);
+
+                            console.log("Completed write task at index " + taskIndex + ". Task queue is now " + this.self.q.length + " items long.");
                         }
 
                     }
@@ -189,99 +196,12 @@ function Typpo(options) {
             
             }
 
-        }.bind({self: this.self, s: s}));
+        }.bind({self: this.self, s: s, taskIndex: taskIndex}));
 
 
     }
 
-
-
-
-
-
-
-
-
-
-
-
-    this.write = function(s, callback, pos) {
-
-        if (!pos) {
-
-            var pos = 0;
-
-        }
-
-        if (!callback) {
-
-            var callback = null;
-        }
-
-
-        // there are still tasks to complete in the queue, so let's add this write task as a method of the last queued task
-        if (q.length > 0) {
-
-            q[q.length - 1].then(function() {
-
-                this.write(s, callback, pos);
-
-            });
-
-        }
-
-        setTimeout(function() {
-
-            var c = this.s.substr(this.pos, 1);
-
-            if (this.self.errorTable.hasOwnProperty(c) && this.self.probability > Math.random()) {
-
-                this.self.pressKey(this.self.errorTable[c][Math.floor(Math.random() * this.self.errorTable[c].length)]);
-
-                setTimeout(function() {
-
-                    var html = this.self.destination.innerHTML;
-
-                    window.requestAnimationFrame(function() {
-
-                        this.self.destination.innerHTML = html.substr(0, html.length - 1);
-
-                        this.self.write(this.s, this.callback, this.pos);
-
-                    }.bind({self: this.self, s: this.s, callback: this.callback, pos: this.pos}));
-
-                }.bind({self: this.self, s: this.s, callback: this.callback, pos: this.pos}), Math.random() * this.self.backspaceSlowness);
-
-            }
-
-            else {
-
-                this.self.pressKey(c);
-
-                this.pos += 1;
-
-                if (this.pos <= this.s.length) {
-
-                    this.self.write(this.s, this.callback, this.pos);
-                
-                }
-
-                else {
-
-                    if (this.callback) {
-
-                        callback();
-
-                    }
-                
-                }
-
-            }
-
-        }.bind({self: this.self, s: s, callback: callback, pos: pos}), Math.random() * this.self.slowness);
-
-    }
-
+    // TODO: this needs to be rewritten to use the new async task queue
     this.writeUncorrected = function(s, callback, pos) {
 
         if (!pos) {
@@ -351,30 +271,61 @@ function Typpo(options) {
 
     }
 
-    this.enter = function(n, callback) {
+    this.enter = function(n) {
 
-        if (n && n > 1) {
+        var taskIndex = this.q.length;
 
-            for (var i = 0; i < n; i += 1) {
+        this.q[taskIndex] = new Promise(function(resolve, reject) {
 
-                this.destination.innerHTML = this.destination.innerHTML + "<br>";
+            var taskIndex = this.taskIndex;
+
+            // if the queue is empty, we can execute the write task immediately
+            if (this.self.q.length === 0) {
+
+                doEnter(this.self, this.n);
+            
+            }
+
+            // if the queue has other tasks in it, we need to add this task to the then() 
+            // method of the last task in the queue
+            else if (this.self.q.length > 0) {
+
+                this.self.q[this.self.q.length - 1].then(function() {
+
+                    doEnter(this.self, this.n);
+
+                }.bind({self: this.self, n: n}));
+            
+            }
+
+            function doEnter(self, n) {
+
+                if (n && n > 1) {
+
+                    for (var i = 0; i < n; i += 1) {
+
+                    self.destination.innerHTML = self.destination.innerHTML + "<br>";
+
+                    }
+        
+                }
+
+                else {
+
+                    self.destination.innerHTML = self.destination.innerHTML + "<br>";
+
+                }
+
+                resolve();
+                            
+                self.q.pop(taskIndex);
+
+                console.log("Completed enter task at index " + taskIndex + ". Task queue is now " + self.q.length + " items long.");
 
             }
-        
-        }
 
-        else {
+        }.bind({self: this.self, n: n, taskIndex: taskIndex}));
 
-            this.destination.innerHTML = this.destination.innerHTML + "<br>";
-
-        }
-
-        if (callback) {
-
-            callback();
-            
-        }
-  
     }
 
 	this.errorTable = {
