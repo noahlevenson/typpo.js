@@ -184,7 +184,7 @@ function Typpo(options) {
 
                             resolve();
                             
-                            this.self.q.pop(taskIndex);
+                            this.self.q.shift();
 
                             console.log("Completed write task at index " + taskIndex + ". Task queue is now " + this.self.q.length + " items long.");
                         }
@@ -318,7 +318,7 @@ function Typpo(options) {
 
                 resolve();
                             
-                self.q.pop(taskIndex);
+                self.q.shift();
 
                 console.log("Completed enter task at index " + taskIndex + ". Task queue is now " + self.q.length + " items long.");
 
