@@ -22,7 +22,7 @@ function Typpo(options) {
 
 	this.showCursor = true;
 
-	this.cursor = "|";
+	this.cursor = "<span class=\"typpo-cursor\">" + "|" + "</span>";
 
 	if (options.showCursor && options.showCursor === false) {
 
@@ -30,9 +30,21 @@ function Typpo(options) {
 
 	}
 
+    else {
+
+        var css = document.createElement("style");
+
+        css.type = "text/css";
+
+        css.innerHTML = "\n.typpo-cursor {\n    animation: typpoBlink 0.7s infinite;\n}\n@keyframes typpoBlink {\n    50% { opacity: 0.0; }\n    100% { opacity: 1; }\n}\n";
+        
+        document.head.appendChild(css);
+
+    }
+
 	if (options.cursor) {
 
-		this.cursor = options.cursor;
+		this.cursor = "<span class=\"typpo-cursor\">" + options.cursor + "</span>";
 
 	}
 
@@ -125,7 +137,7 @@ Typpo.prototype.pressKey = function(c) {
        	if (this.self.showCursor) {
 
         	// if we're showing the cursor, first remove the cursor
-        	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+        	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - this.self.cursor.length);
 
         	// then add the new character
         	this.self.destination.innerHTML = this.self.destination.innerHTML + this.c;
@@ -199,7 +211,7 @@ Typpo.prototype.write = function(s) {
                            	if (this.self.showCursor) {
 
                             	// if we're showing the cursor, first delete the cursor
-                            	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+                            	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - this.self.cursor.length);
 
                             	// then delete the mistake
                             	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
@@ -382,7 +394,7 @@ Typpo.prototype.enter = function(n) {
                 	if (self.showCursor) {
 
                 		// if we're showing the cursor, first delete the cursor
-                		self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+                		self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - self.cursor.length);
 
                 		// then add the line break
                 		self.destination.innerHTML = self.destination.innerHTML + "<br>";
@@ -469,7 +481,7 @@ Typpo.prototype.backspaceAll = function(ttl) {
         		if (self.showCursor) {
 
         			// if we're showing the cursor, first remove the cursor
-        			self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+        			self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - self.cursor.length);
 
         			// and remove a character too
         			self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
@@ -487,11 +499,17 @@ Typpo.prototype.backspaceAll = function(ttl) {
         		}
 
         		// if there's more to backspace, recurse the function
-        		if (self.destination.innerHTML.length > 0) {
+                if(self.showCursor && self.destination.innerHTML.length > self.cursor.length) {
 
-        			doBackspaceAll(this.self);
+                    doBackspaceAll(this.self);
 
-        		}
+                }
+
+                else if (!self.showCursor && self.destination.innerHTML.length > 0) {
+
+                    doBackspaceAll(this.self);
+
+                }
 
         		// if there's no more to backspace, resolve the promise and shift 
         		// the task out of the queue
