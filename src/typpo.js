@@ -116,148 +116,6 @@ function Typpo(options) {
 
 	this.backspaceSlowness = 1000 - (this.correctionSpeed * 10);
 	
-	this.pressKey = function(c) {
-
-        window.requestAnimationFrame(function() {
-
-        	if (this.self.showCursor) {
-
-        		// if we're showing the cursor, first remove the cursor
-        		this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
-
-        		// then add the new character
-        		this.self.destination.innerHTML = this.self.destination.innerHTML + this.c;
-
-        		// then add the cursor back at the end
-        		this.self.destination.innerHTML = this.self.destination.innerHTML + this.self.cursor;
-
-        	}
-
-        	else {
-
-        		// if we're not showing the cursor, just add the new character
-        		this.self.destination.innerHTML = this.self.destination.innerHTML + this.c;
-
-        	}
-
-        }.bind({self: this.self, c: c}));
-
-	}
-
-    this.write = function(s) {
-
-    	// todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
-    	// which is subject to change as the tasks ahead of it are shifted out of the q array - note that we also
-    	// bind it to the promise (way down below)
-        var taskIndex = this.q.length;
-
-        this.q[taskIndex] = new Promise(function(resolve, reject) {
-
-            var taskIndex = this.taskIndex;
-
-            // if the queue is empty, we can execute the write task immediately
-            if (this.self.q.length === 0) {
-
-                doWrite(this.self, this.s, 0);
-            }
-
-            // if the queue has other tasks in it, we need to add this task to the then() 
-            // method of the last task in the queue
-            else if (this.self.q.length > 0) {
-
-                this.self.q[this.self.q.length - 1].then(function() {
-
-                    doWrite(this.self, this.s, 0);
-
-                }.bind({self: this.self, s: s}));
-            }
-
-            function doWrite(self, s, pos) {
-
-                setTimeout(function() {
-
-                    // c is the character we're gonna type
-                    var c = this.s.substr(this.pos, 1);
-
-                    // if our desired character has an entry in the error table and the randomizer hits, 
-                    // let's type a randomized wrong character
-                    if (this.self.errorTable.hasOwnProperty(c) && this.self.probability > Math.random()) {
-
-                        this.self.pressKey(this.self.errorTable[c][Math.floor(Math.random() * this.self.errorTable[c].length)]);
-
-                        // now let's wait for a duration, backspace the mistake, and recurse doWrite to
-                        // try again
-                        setTimeout(function() {
-
-                            window.requestAnimationFrame(function() {
-
-                            	// here's where we backspace the mistake
-                            	if (this.self.showCursor) {
-
-                            		// if we're showing the cursor, first delete the cursor
-                            		this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
-
-                            		// then delete the mistake
-                            		this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
-
-                            		// then add the cursor back in
-                            		this.self.destination.innerHTML = this.self.destination.innerHTML + this.self.cursor;
-
-                            	}
-
-                            	else {
-
-                            		// if we're not showing the cursor, just delete the mistake
-                            		this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
-
-                            	}
-                                
-                            	// here's where we recurse the function to do it again
-                                doWrite(this.self, this.s, this.pos);
-
-                            }.bind({self: this.self, s: this.s, pos: this.pos}));
-
-                        }.bind({self: this.self, s: this.s, pos: this.pos}), Math.random() * this.self.backspaceSlowness);
-
-                    }
-
-                    // otherwise, let's type the correct character, advance the position in our
-                    // string and recurse to do it again
-                    else {
-
-                        this.self.pressKey(c);
-
-                        this.pos += 1;
-
-                        if (this.pos <= this.s.length) {
-
-                            doWrite(this.self, this.s, this.pos);
-                
-                        }
-
-                        // here's where we've reached the end of the string, so we resolve the promise
-                        // and shift it out of the task queue
-                        else {
-
-                            resolve();
-                            
-                            this.self.q.shift();
-
-                            console.log("Completed write task at index " + taskIndex + ". Task queue is now " + this.self.q.length + " items long.");
-                        }
-
-                    }
-
-                }.bind({self: self, s: s, pos: pos}), Math.random() * self.slowness);
-
-            
-            }
-
-        }.bind({self: this.self, s: s, taskIndex: taskIndex}));
-
-
-    }
-
     this.writeUncorrected = function(s) {
 
     	// todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
@@ -580,5 +438,149 @@ function Typpo(options) {
 	};
 
 }
+
+Typpo.prototype.pressKey = function(c) {
+
+    window.requestAnimationFrame(function() {
+
+       	if (this.self.showCursor) {
+
+        	// if we're showing the cursor, first remove the cursor
+        	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+
+        	// then add the new character
+        	this.self.destination.innerHTML = this.self.destination.innerHTML + this.c;
+
+        	// then add the cursor back at the end
+        	this.self.destination.innerHTML = this.self.destination.innerHTML + this.self.cursor;
+
+        }
+
+        else {
+
+        	// if we're not showing the cursor, just add the new character
+        	this.self.destination.innerHTML = this.self.destination.innerHTML + this.c;
+
+        }
+
+    }.bind({self: this.self, c: c}));
+
+}
+
+Typpo.prototype.write = function(s) {
+
+    // todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
+    // which is subject to change as the tasks ahead of it are shifted out of the q array - note that we also
+    // bind it to the promise (way down below)
+    var taskIndex = this.q.length;
+
+    this.q[taskIndex] = new Promise(function(resolve, reject) {
+
+        var taskIndex = this.taskIndex;
+
+        // if the queue is empty, we can execute the write task immediately
+        if (this.self.q.length === 0) {
+
+            doWrite(this.self, this.s, 0);
+        
+        }
+
+        // if the queue has other tasks in it, we need to add this task to the then() 
+        // method of the last task in the queue
+        else if (this.self.q.length > 0) {
+
+            this.self.q[this.self.q.length - 1].then(function() {
+
+                doWrite(this.self, this.s, 0);
+
+            }.bind({self: this.self, s: s}));
+            
+        }
+
+        function doWrite(self, s, pos) {
+
+            setTimeout(function() {
+
+                // c is the character we're gonna type
+                var c = this.s.substr(this.pos, 1);
+
+                // if our desired character has an entry in the error table and the randomizer hits, 
+                // let's type a randomized wrong character
+                if (this.self.errorTable.hasOwnProperty(c) && this.self.probability > Math.random()) {
+
+                 	this.self.pressKey(this.self.errorTable[c][Math.floor(Math.random() * this.self.errorTable[c].length)]);
+
+                    // now let's wait for a duration, backspace the mistake, and recurse doWrite to
+                    // try again
+                    setTimeout(function() {
+
+                       	window.requestAnimationFrame(function() {
+
+                           	// here's where we backspace the mistake
+                           	if (this.self.showCursor) {
+
+                            	// if we're showing the cursor, first delete the cursor
+                            	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+
+                            	// then delete the mistake
+                            	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+
+                            	// then add the cursor back in
+                            	this.self.destination.innerHTML = this.self.destination.innerHTML + this.self.cursor;
+
+                            }
+
+                            else {
+
+                            	// if we're not showing the cursor, just delete the mistake
+                            	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+
+                            }
+                                
+                            // here's where we recurse the function to do it again
+                               doWrite(this.self, this.s, this.pos);
+
+                        }.bind({self: this.self, s: this.s, pos: this.pos}));
+
+                    }.bind({self: this.self, s: this.s, pos: this.pos}), Math.random() * this.self.backspaceSlowness);
+
+                }
+
+                // otherwise, let's type the correct character, advance the position in our
+                // string and recurse to do it again
+                else {
+
+                    this.self.pressKey(c);
+
+                    this.pos += 1;
+
+                    if (this.pos <= this.s.length) {
+
+                        doWrite(this.self, this.s, this.pos);
+                
+                    }
+
+                    // here's where we've reached the end of the string, so we resolve the promise
+                    // and shift it out of the task queue
+                    else {
+
+                        resolve();
+                            
+                        this.self.q.shift();
+
+                        console.log("Completed write task at index " + taskIndex + ". Task queue is now " + this.self.q.length + " items long.");
+                    
+                    }
+
+                }
+
+            }.bind({self: self, s: s, pos: pos}), Math.random() * self.slowness);
+        
+        }
+
+    }.bind({self: this.self, s: s, taskIndex: taskIndex}));
+
+}
+
 
 
