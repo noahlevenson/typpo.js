@@ -20,11 +20,29 @@ function Typpo(options) {
 
 	this.correctionSpeed = 30;
 
-	this.showCursor = false;
+	this.showCursor = true;
 
 	this.cursor = "|";
 
+	if (options.showCursor && options.showCursor === false) {
+
+		this.showCursor = false;
+
+	}
+
+	if (options.cursor) {
+
+		this.cursor = options.cursor;
+
+	}
+
 	this.destination = document.getElementById(options.element);
+
+	if (this.showCursor) {
+
+		this.destination.innerHTML = this.destination.innerHTML + this.cursor;
+
+	}
 
 	if (options.speed) {
 
@@ -102,7 +120,25 @@ function Typpo(options) {
 
         window.requestAnimationFrame(function() {
 
-            this.self.destination.innerHTML = this.self.destination.innerHTML + this.c;
+        	if (this.self.showCursor) {
+
+        		// if we're showing the cursor, first remove the cursor
+        		this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+
+        		// then add the new character
+        		this.self.destination.innerHTML = this.self.destination.innerHTML + this.c;
+
+        		// then add the cursor back at the end
+        		this.self.destination.innerHTML = this.self.destination.innerHTML + this.self.cursor;
+
+        	}
+
+        	else {
+
+        		// if we're not showing the cursor, just add the new character
+        		this.self.destination.innerHTML = this.self.destination.innerHTML + this.c;
+
+        	}
 
         }.bind({self: this.self, c: c}));
 
@@ -153,12 +189,30 @@ function Typpo(options) {
                         // try again
                         setTimeout(function() {
 
-                            var html = this.self.destination.innerHTML;
-
                             window.requestAnimationFrame(function() {
 
-                                this.self.destination.innerHTML = html.substr(0, html.length - 1);
+                            	// here's where we backspace the mistake
+                            	if (this.self.showCursor) {
 
+                            		// if we're showing the cursor, first delete the cursor
+                            		this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+
+                            		// then delete the mistake
+                            		this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+
+                            		// then add the cursor back in
+                            		this.self.destination.innerHTML = this.self.destination.innerHTML + this.self.cursor;
+
+                            	}
+
+                            	else {
+
+                            		// if we're not showing the cursor, just delete the mistake
+                            		this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
+
+                            	}
+                                
+                            	// here's where we recurse the function to do it again
                                 doWrite(this.self, this.s, this.pos);
 
                             }.bind({self: this.self, s: this.s, pos: this.pos}));
@@ -321,7 +375,18 @@ function Typpo(options) {
 
                     for (var i = 0; i < n; i += 1) {
 
-                    self.destination.innerHTML = self.destination.innerHTML + "<br>";
+                    	if (self.showCursor) {
+
+                    		// if we're showing the cursor, first delete the cursor
+                    		self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+
+                    		// then add the line break
+                    		self.destination.innerHTML = self.destination.innerHTML + "<br>";
+
+                    		// then add the cursor back in
+                    		self.destination.innerHTML = self.destination.innerHTML + self.cursor;
+
+                    	}
 
                     }
         
@@ -329,7 +394,17 @@ function Typpo(options) {
 
                 else {
 
-                    self.destination.innerHTML = self.destination.innerHTML + "<br>";
+                	if (self.showCursor) {
+
+                		// if we're showing the cursor, first delete the cursor
+                		self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+
+                		// then add the line break
+                    	self.destination.innerHTML = self.destination.innerHTML + "<br>";
+
+                    	// then add the cursor back in
+                    	self.destination.innerHTML = self.destination.innerHTML + self.cursor;
+                	}        
 
                 }
 
@@ -388,8 +463,25 @@ function Typpo(options) {
 
             	setTimeout(function() {
 
-            		// remove the last character from the element
-            		self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+            		if (self.showCursor) {
+
+            			// if we're showing the cursor, first remove the cursor
+            			self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+
+            			// and remove a character too
+            			self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+
+            			// and then add the cursor back in
+            			self.destination.innerHTML = self.destination.innerHTML + self.cursor;
+
+            		}
+
+            		else {
+
+            			// if we're not showing the cursor, just remove a character
+            			self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+
+            		}
 
             		// if there's more to backspace, recurse the function
             		if (self.destination.innerHTML.length > 0) {
