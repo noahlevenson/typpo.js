@@ -447,7 +447,7 @@ Typpo.prototype.backspaceAll = function(ttl) {
 
     	var taskIndex = this.taskIndex;
 
-    	 // if the queue is empty, we can execute the backspaceAll task immediately
+    	// if the queue is empty, we can execute the backspaceAll task immediately
         if (this.self.q.length === 0) {
 
         	setTimeout(function() {
@@ -528,6 +528,56 @@ Typpo.prototype.backspaceAll = function(ttl) {
         }
 
     }.bind({self: this.self, ttl: ttl, taskIndex: taskIndex}));
+
+}
+
+Typpo.prototype.pause = function(t) {
+
+    // todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
+    // which is subject to change as the tasks ahead of it are shifted out of the q array - note that we also
+    // bind it to the promise (way down below)
+    var taskIndex = this.q.length;
+
+    this.q[taskIndex] = new Promise(function(resolve, reject) {
+
+        var taskIndex = this.taskIndex;
+
+        // if the queue is empty, we can execute the pause task immediately
+        if (this.self.q.length === 0) {
+
+                doPause(this.self, this.t);
+            
+        }
+
+        // if the queue has other tasks in it, we need to add this task to the then() 
+        // method of the last task in the queue
+        else if (this.self.q.length > 0) {
+
+            this.self.q[this.self.q.length - 1].then(function() {
+
+                    doPause(this.self, this.t);
+
+            }.bind({self: this.self, t: this.t}));
+        
+        }
+
+        function doPause(self, t) {
+
+            setTimeout(function() {
+
+                // just wait the specified duration in ms, then resolve the 
+                // promise and shift the task out of the queue
+                resolve();
+                            
+                self.q.shift();
+
+                console.log("Completed pause task at index " + taskIndex + ". Task queue is now " + self.q.length + " items long.");
+
+            }, t);
+
+        }
+
+    }.bind({self: this.self, t: t, taskIndex: taskIndex}));
 
 }
 
