@@ -22,7 +22,9 @@ function Typpo(options) {
 
 	this.showCursor = true;
 
-	this.cursor = "<span class=\"typpo-cursor\">" + "|" + "</span>";
+	this.cursor = "|";
+
+    this.blinkToggle = true;
 
 	if (options.showCursor === false) {
 
@@ -36,15 +38,17 @@ function Typpo(options) {
 
         css.type = "text/css";
 
-        css.innerHTML = "\n.typpo-cursor {\n    animation: typpoBlink 0.7s infinite;\n}\n@keyframes typpoBlink {\n    50% { opacity: 0.0; }\n    100% { opacity: 1; }\n}\n";
+        css.innerHTML = "\n.typpo-cursorBlink {\n    animation: typpoBlink 0.7s infinite;\n}\n@keyframes typpoBlink {\n    50% { opacity: 0.0; }\n    100% { opacity: 1; }\n}\n";
         
+        css.innerHTML = css.innerHTML + "\n.typpo-cursorSolid {\n    opacity: 1;\n}";
+
         document.head.appendChild(css);
 
     }
 
 	if (options.cursor) {
 
-		this.cursor = "<span class=\"typpo-cursor\">" + options.cursor + "</span>";
+		this.cursor = options.cursor;
 
 	}
 
@@ -52,7 +56,7 @@ function Typpo(options) {
 
 	if (this.showCursor) {
 
-		this.destination.innerHTML = this.destination.innerHTML + this.cursor;
+		this.insertCursor(this.self);
 
 	}
 
@@ -137,13 +141,13 @@ Typpo.prototype.pressKey = function(c) {
        	if (this.self.showCursor) {
 
         	// if we're showing the cursor, first remove the cursor
-        	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - this.self.cursor.length);
+        	this.self.removeCursor(this.self);
 
         	// then add the new character
         	this.self.destination.innerHTML = this.self.destination.innerHTML + this.c;
 
         	// then add the cursor back at the end
-        	this.self.destination.innerHTML = this.self.destination.innerHTML + this.self.cursor;
+        	this.self.insertCursor(this.self);
 
         }
 
@@ -155,6 +159,27 @@ Typpo.prototype.pressKey = function(c) {
         }
 
     }.bind({self: this.self, c: c}));
+
+}
+
+Typpo.prototype.insertCursor = function(self) {
+
+    if (self.blinkToggle) {
+
+        self.destination.innerHTML = self.destination.innerHTML + "<span class=\"typpo-cursorBlink\">" + self.cursor + "</span>";
+    
+    }
+
+    else {
+
+        self.destination.innerHTML = self.destination.innerHTML + "<span class=\"typpo-cursorSolid\">" + self.cursor + "</span>";
+    }
+
+}
+
+Typpo.prototype.removeCursor = function(self) {
+
+    self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - (self.cursor.length + 39));
 
 }
 
@@ -172,6 +197,9 @@ Typpo.prototype.write = function(s) {
         // if the queue is empty, we can execute the write task immediately
         if (this.self.q.length === 0) {
 
+            // new: set the cursor on solid
+            this.self.blinkToggle = false;
+
             doWrite(this.self, this.s, 0);
         
         }
@@ -181,6 +209,9 @@ Typpo.prototype.write = function(s) {
         else if (this.self.q.length > 0) {
 
             this.self.q[this.self.q.length - 1].then(function() {
+
+                // new: set the cursor on solid
+                this.self.blinkToggle = false;
 
                 doWrite(this.self, this.s, 0);
 
@@ -211,13 +242,13 @@ Typpo.prototype.write = function(s) {
                            	if (this.self.showCursor) {
 
                             	// if we're showing the cursor, first delete the cursor
-                            	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - this.self.cursor.length);
+                            	this.self.removeCursor(this.self);
 
                             	// then delete the mistake
                             	this.self.destination.innerHTML = this.self.destination.innerHTML.substr(0, this.self.destination.innerHTML.length - 1);
 
                             	// then add the cursor back in
-                            	this.self.destination.innerHTML = this.self.destination.innerHTML + this.self.cursor;
+                            	this.self.insertCursor(this.self);
 
                             }
 
@@ -255,6 +286,13 @@ Typpo.prototype.write = function(s) {
                     // and shift it out of the task queue
                     else {
 
+                        // new: set the cursor to blink
+                        this.self.removeCursor(this.self);
+
+                        this.self.blinkToggle = true;
+
+                        this.self.insertCursor(this.self);
+
                         resolve();
                             
                         this.self.q.shift();
@@ -287,6 +325,9 @@ Typpo.prototype.writeUncorrected = function(s) {
 		// if the queue is empty, we can execute the write task immediately
 		if (this.self.q.length === 0) {
 
+            // new: set the cursor on solid
+            this.self.blinkToggle = false;
+
 		    doWriteUncorrected(this.self, this.s, 0);
 		
 		}
@@ -296,6 +337,9 @@ Typpo.prototype.writeUncorrected = function(s) {
 		else if (this.self.q.length > 0) {
 
 		    this.self.q[this.self.q.length - 1].then(function() {
+
+                // new: set the cursor on solid
+                this.self.blinkToggle = false;
 
 		        doWriteUncorrected(this.self, this.s, 0);
 
@@ -339,6 +383,13 @@ Typpo.prototype.writeUncorrected = function(s) {
 		        // and shift it out of the task queue
 		        else {
 
+                    // new: set the cursor to blink
+                    this.self.removeCursor(this.self);
+
+                    this.self.blinkToggle = true;
+
+                    this.self.insertCursor(this.self);
+
 		            resolve();
 		                
 		            this.self.q.shift();
@@ -369,6 +420,9 @@ Typpo.prototype.enter = function(n) {
         // if the queue is empty, we can execute the enter task immediately
         if (this.self.q.length === 0) {
 
+            // new: set the cursor on solid
+            this.self.blinkToggle = false;
+
             doEnter(this.self, this.n);
         
         }
@@ -378,6 +432,9 @@ Typpo.prototype.enter = function(n) {
         else if (this.self.q.length > 0) {
 
             this.self.q[this.self.q.length - 1].then(function() {
+
+                // new: set the cursor on solid
+                this.self.blinkToggle = false;
 
                 doEnter(this.self, this.n);
 
@@ -394,13 +451,13 @@ Typpo.prototype.enter = function(n) {
                 	if (self.showCursor) {
 
                 		// if we're showing the cursor, first delete the cursor
-                		self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - self.cursor.length);
+                        self.removeCursor(self);
 
                 		// then add the line break
                 		self.destination.innerHTML = self.destination.innerHTML + "<br>";
 
                 		// then add the cursor back in
-                		self.destination.innerHTML = self.destination.innerHTML + self.cursor;
+                		self.insertCursor(self);
 
                 	}
 
@@ -413,16 +470,23 @@ Typpo.prototype.enter = function(n) {
             	if (self.showCursor) {
 
             		// if we're showing the cursor, first delete the cursor
-            		self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
+            		self.removeCursor(self);
 
             		// then add the line break
                 	self.destination.innerHTML = self.destination.innerHTML + "<br>";
 
                 	// then add the cursor back in
-                	self.destination.innerHTML = self.destination.innerHTML + self.cursor;
+                	self.insertCursor(self);
             	}        
 
             }
+
+            // new: set the cursor to blink
+            self.removeCursor(self);
+
+            self.blinkToggle = true;
+
+            self.insertCursor(self);
 
             resolve();
                         
@@ -452,6 +516,9 @@ Typpo.prototype.backspaceAll = function(ttl) {
 
         	setTimeout(function() {
 
+                // new: set the cursor on solid
+                this.self.blinkToggle = false;
+
         		doBackspaceAll(this.self);
 
         	}.bind({self: this.self}), ttl);
@@ -465,6 +532,9 @@ Typpo.prototype.backspaceAll = function(ttl) {
             this.self.q[this.self.q.length - 1].then(function() {
 
             	setTimeout(function() {
+
+                    // new: set the cursor on solid
+                    this.self.blinkToggle = false;
 
             		doBackspaceAll(this.self);
 
@@ -481,13 +551,13 @@ Typpo.prototype.backspaceAll = function(ttl) {
         		if (self.showCursor) {
 
         			// if we're showing the cursor, first remove the cursor
-        			self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - self.cursor.length);
+        			self.removeCursor(self);
 
         			// and remove a character too
         			self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - 1);
 
         			// and then add the cursor back in
-        			self.destination.innerHTML = self.destination.innerHTML + self.cursor;
+        			self.insertCursor(self);
 
         		}
 
@@ -499,7 +569,7 @@ Typpo.prototype.backspaceAll = function(ttl) {
         		}
 
         		// if there's more to backspace, recurse the function
-                if(self.showCursor && self.destination.innerHTML.length > self.cursor.length) {
+                if(self.showCursor && self.destination.innerHTML.length > (self.cursor.length + 39)) {
 
                     doBackspaceAll(this.self);
 
@@ -514,6 +584,13 @@ Typpo.prototype.backspaceAll = function(ttl) {
         		// if there's no more to backspace, resolve the promise and shift 
         		// the task out of the queue
         		else {
+
+                    // new: set the cursor on blink
+                    this.self.removeCursor(this.self);
+
+                    this.self.blinkToggle = true;
+
+                    this.self.insertCursor(this.self);
 
             		resolve();
                             
