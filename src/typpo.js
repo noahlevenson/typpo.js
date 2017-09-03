@@ -28,8 +28,6 @@ function Typpo(options) {
 
 		this.showCursor = false;
 
-        console.log("showcursor false bitch");
-
 	}
 
     else {
