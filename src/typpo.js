@@ -24,9 +24,11 @@ function Typpo(options) {
 
 	this.cursor = "<span class=\"typpo-cursor\">" + "|" + "</span>";
 
-	if (options.showCursor && options.showCursor === false) {
+	if (options.showCursor === false) {
 
 		this.showCursor = false;
+
+        console.log("showcursor false bitch");
 
 	}
 
