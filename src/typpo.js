@@ -14,6 +14,10 @@ function Typpo(options) {
 
     this.q = [];
 
+    this.onComplete = function() {
+
+    }
+
 	this.speed = 0;
 
 	this.badness = 0;
@@ -162,27 +166,6 @@ Typpo.prototype.pressKey = function(c) {
 
 }
 
-Typpo.prototype.insertCursor = function(self) {
-
-    if (self.blinkToggle) {
-
-        self.destination.innerHTML = self.destination.innerHTML + "<span class=\"typpo-cursorBlink\">" + self.cursor + "</span>";
-    
-    }
-
-    else {
-
-        self.destination.innerHTML = self.destination.innerHTML + "<span class=\"typpo-cursorSolid\">" + self.cursor + "</span>";
-    }
-
-}
-
-Typpo.prototype.removeCursor = function(self) {
-
-    self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - (self.cursor.length + 39));
-
-}
-
 Typpo.prototype.write = function(s) {
 
     // todo: you may never need this taskIndex, as it just stores the original q index assigned to the task
@@ -297,6 +280,8 @@ Typpo.prototype.write = function(s) {
                             
                         this.self.q.shift();
 
+                        this.self.checkComplete(this.self);
+
                         console.log("Completed write task at index " + taskIndex + ". Task queue is now " + this.self.q.length + " items long.");
                     
                     }
@@ -393,6 +378,8 @@ Typpo.prototype.writeUncorrected = function(s) {
 		            resolve();
 		                
 		            this.self.q.shift();
+
+                    this.self.checkComplete(this.self);
 
 		            console.log("Completed writeUncorrected task at index " + taskIndex + ". Task queue is now " + this.self.q.length + " items long.");
 		            
@@ -491,6 +478,8 @@ Typpo.prototype.enter = function(n) {
             resolve();
                         
             self.q.shift();
+
+            self.checkComplete(self);
 
             console.log("Completed enter task at index " + taskIndex + ". Task queue is now " + self.q.length + " items long.");
 
@@ -596,6 +585,8 @@ Typpo.prototype.backspaceAll = function(ttl) {
                             
                 	self.q.shift();
 
+                    self.checkComplete(self);
+
                 	console.log("Completed backspaceAll task at index " + taskIndex + ". Task queue is now " + self.q.length + " items long.");
 
             	}
@@ -648,6 +639,8 @@ Typpo.prototype.pause = function(t) {
                             
                 self.q.shift();
 
+                self.checkComplete(self);
+
                 console.log("Completed pause task at index " + taskIndex + ". Task queue is now " + self.q.length + " items long.");
 
             }, t);
@@ -655,6 +648,38 @@ Typpo.prototype.pause = function(t) {
         }
 
     }.bind({self: this.self, t: t, taskIndex: taskIndex}));
+
+}
+
+Typpo.prototype.insertCursor = function(self) {
+
+    if (self.blinkToggle) {
+
+        self.destination.innerHTML = self.destination.innerHTML + "<span class=\"typpo-cursorBlink\">" + self.cursor + "</span>";
+    
+    }
+
+    else {
+
+        self.destination.innerHTML = self.destination.innerHTML + "<span class=\"typpo-cursorSolid\">" + self.cursor + "</span>";
+    
+    }
+
+}
+
+Typpo.prototype.removeCursor = function(self) {
+
+    self.destination.innerHTML = self.destination.innerHTML.substr(0, self.destination.innerHTML.length - (self.cursor.length + 39));
+
+}
+
+Typpo.prototype.checkComplete = function(self) {
+
+    if (self.q.length === 0) {
+
+        self.onComplete();
+
+    }
 
 }
 
