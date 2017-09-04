@@ -6,12 +6,10 @@ It's built around an asynchronous promise system that simplifies the animation o
 
 USAGE:
 
-`<script src="typpo.js"></script>
+~~~ javascript
+<script src="typpo.js"></script>
 
 <div id="myDiv"></div>
 
 var myTyppo = new Typpo({element: "myDiv", badness: 05, speed: 80, backspaceSpeed: 10});
-
-
-
-`
+~~~
