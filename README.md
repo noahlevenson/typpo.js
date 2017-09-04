@@ -4,9 +4,7 @@ Typpo.js is a JavaScript library that procedurally animates bad typing. Set the 
 
 It's built around an asynchronous promise system that simplifies the animation of unpredictable sources of text, such as live internet feeds.
 
-Usage
------
-
+#### Usage
 ~~~ javascript
 <script src="typpo.js"></script>
 
