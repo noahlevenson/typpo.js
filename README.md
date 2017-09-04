@@ -11,5 +11,14 @@ USAGE:
 
 <div id="myDiv"></div>
 
-var myTyppo = new Typpo({element: "myDiv", badness: 20, speed: 80, backspaceSpeed: 10, showCursor: true, cursor: "|"});
+var options = {
+    element: "myDiv", 
+    badness: 20, 
+    speed: 80, 
+    backspaceSpeed: 10, 
+    showCursor: true, 
+    cursor: "|"
+};
+
+var myTyppo = new Typpo(options);
 ~~~
