@@ -21,4 +21,16 @@ var options = {
 };
 
 var myTyppo = new Typpo(options);
+
+myTyppo.onComplete = function() {
+    
+    console.log("The promise queue has been drained!");
+
+}
+
+myTyppo.write("I'll correct my mistakes while typing this.");
+myTyppo.pause(2000);
+myTyppo.enter(2);
+myTyppo.writeUncorrected("But I won't correct my mistakes here.")
+myTyppo.backspaceAll(3000);
 ~~~
