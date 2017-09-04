@@ -23,9 +23,7 @@ var options = {
 var myTyppo = new Typpo(options);
 
 myTyppo.onComplete = function() {
-    
     console.log("The promise queue has been drained!");
-
 }
 
 myTyppo.write("I'll correct my mistakes while typing this.");
