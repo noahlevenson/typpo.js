@@ -202,16 +202,22 @@ Typpo.prototype.write = function(s) {
             
         }
 
-        function doWrite(self, s, pos) {
+        function doWrite(self, s, pos, forceCorrect) {
+
+            if (!forceCorrect) {
+
+                forceCorrect = false;
+
+            }
 
             setTimeout(function() {
 
                 // c is the character we're gonna type
                 var c = this.s.substr(this.pos, 1);
 
-                // if our desired character has an entry in the error table and the randomizer hits, 
-                // let's type a randomized wrong character
-                if (this.self.errorTable.hasOwnProperty(c) && this.self.probability > Math.random()) {
+                // if our desired character has an entry in the error table and the randomizer hits, AND
+                // forceCorrect is false, let's type a randomized wrong character
+                if (!this.forceCorrect && this.self.errorTable.hasOwnProperty(c) && this.self.probability > Math.random()) {
 
                  	this.self.pressKey(this.self.errorTable[c][Math.floor(Math.random() * this.self.errorTable[c].length)]);
 
@@ -243,7 +249,9 @@ Typpo.prototype.write = function(s) {
                             }
                                 
                             // here's where we recurse the function to do it again
-                               doWrite(this.self, this.s, this.pos);
+                            // new: add the forceCorrect flag to guarantee we get it
+                            // right next time
+                            doWrite(this.self, this.s, this.pos, true);
 
                         }.bind({self: this.self, s: this.s, pos: this.pos}));
 
@@ -288,7 +296,7 @@ Typpo.prototype.write = function(s) {
 
                 }
 
-            }.bind({self: self, s: s, pos: pos}), Math.random() * self.slowness);
+            }.bind({self: self, s: s, pos: pos, forceCorrect: forceCorrect}), Math.random() * self.slowness);
         
         }
 
