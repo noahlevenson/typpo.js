@@ -81,6 +81,6 @@ This method is called every time the Typpo task queue is emptied. Useful for rec
 ### Contact
 I'd love to see how you're using Typpo.js. Show me your projects!
 
-[twitter.com/noahlevenson](twitter.com/noahlevenson)
+[twitter.com/noahlevenson](http://www.twitter.com/noahlevenson)
 
 noahlevenson [at] gmail [dot] com
