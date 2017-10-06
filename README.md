@@ -1,15 +1,19 @@
 # typpo.js
 
-Typpo.js is a JavaScript library that procedurally animates bad typing. Set the typing speed, correction speed and overall typing skill, then watch Typpo type your text with lifelike inaccuracy.
+Typpo.js is a JavaScript library that can procedurally animate lifelike human typing -- errors, corrections and all.
 
-It uses requestAnimationFrame for smooth animations, and it's built around an asynchronous promise system that simplifies the animation of unpredictable sources of text, such as live internet feeds.
+Just set some parameters and supply a string, then watch Typpo type it with startling inaccuracy.
 
-#### Usage
+It's built around a promise system that makes it simple to animate asynchronously generated text, like live tweets or newsfeeds.
+
+Using Typpo.js is easy:
+
 ~~~ javascript
 <script src="typpo.js"></script>
 
 <div id="myDiv"></div>
 
+<script>
 var options = {
     element: "myDiv", 
     badness: 20, 
@@ -30,4 +34,7 @@ myTyppo.pause(2000);
 myTyppo.enter(2);
 myTyppo.writeUncorrected("But I won't correct my mistakes here.")
 myTyppo.backspaceAll(3000);
+</script>
 ~~~
+
+####Documentation
