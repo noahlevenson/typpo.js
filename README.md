@@ -37,4 +37,4 @@ myTyppo.backspaceAll(3000);
 </script>
 ~~~
 
-## Documentation
+### Documentation
