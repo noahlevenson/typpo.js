@@ -1,6 +1,6 @@
 # typpo.js
 
-Typpo.js is a JavaScript library that can procedurally animate lifelike human typing -- errors, corrections and all.
+Typpo.js is a JavaScript library that can procedurally animate lifelike human typing -- random errors, corrections and all.
 
 Just set some parameters and supply a string, then watch Typpo type it with startling inaccuracy.
 
@@ -37,6 +37,7 @@ myTyppo.backspaceAll(3000);
 </script>
 ~~~
 
+
 ### The options object
 **element**<br>
 String. The HTML element that Typpo will type into.
@@ -56,19 +57,30 @@ Boolean. Determines whether Typpo displays the cursor.
 **cursor**<br>
 String. The character(s) that Typpo will display as its cursor.
 
+
 ### Methods
-**write(string)**
-**writeUncorrected(string)**
-**enter(number)**
-**pause(time)**
-**backspaceAll(ttl)**
+**write(string)**<br>
+Types the specified string and corrects errors on the fly.
+
+**writeUncorrected(string)**<br>
+Types the specified string and does not correct errors.
+
+**enter(number)**<br>
+Simulates pressing the enter/return key, creating a line break. The `number` parameter is the number of times to press enter. `enter(1)` === `enter()`.
+
+**pause(time)**<br>
+Inserts a pause into the Typpo task queue, where `time` is the length of time to pause in milliseconds.
+
+**backspaceAll(ttl)**<br>
+Backspaces all text in the Typpo HTML element. The `ttl` parameter is the length of time to wait, in milliseconds, before backspacing.
+
+**onDrain**<br>
+This method is called every time the Typpo task queue is emptied. Useful for recursion, etc.
 
 
 ### Contact
 I'd love to see how you're using Typpo.js. Show me your projects!
 
-twitter.com/noahlevenson
+[twitter.com/noahlevenson](twitter.com/noahlevenson)
 
 noahlevenson [at] gmail [dot] com
-
-www.noahlevenson.com
