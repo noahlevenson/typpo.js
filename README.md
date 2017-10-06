@@ -6,7 +6,7 @@ Just set some parameters and supply a string, then watch Typpo type it with star
 
 It's built around a promise system that makes it simple to animate asynchronously generated text, like live tweets or newsfeeds.
 
-Using Typpo.js is easy:
+#### Using Typpo.js is easy:
 
 ~~~ javascript
 <script src="typpo.js"></script>
@@ -37,4 +37,3 @@ myTyppo.backspaceAll(3000);
 </script>
 ~~~
 
-####Documentation
