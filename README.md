@@ -4,7 +4,7 @@ Typpo.js is a JavaScript library for procedurally animating lifelike human typin
 
 Just set some parameters and supply a string, then watch Typpo type it with startling inaccuracy.
 
-It's built around a promise system that makes it simple to animate asynchronously generated text, like live tweets or newsfeeds.
+It's built around a task queue that makes it simple to animate asynchronously generated text, like live tweets or newsfeeds.
 
 ### Using Typpo.js is easy:
 
