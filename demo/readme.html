@@ -1,0 +1,42 @@
+<!DOCTYPE htmL>
+
+<html>
+
+    <head>
+
+        <title>Typpo.js Readme Demo</title>
+
+    </head>
+
+<body>
+
+    <script src="https://raw.github.com/noahlevenson/typpo.js/master/src/typpo.js"></script>
+
+    <div id="myDiv" style="font-size: 60px"></div>
+
+    <script>
+    var options = {
+        element: "myDiv", 
+        badness: 20, 
+        speed: 80, 
+        backspaceSpeed: 10, 
+        showCursor: true, 
+        cursor: "|"
+    };
+
+    var myTyppo = new Typpo(options);
+
+    myTyppo.onDrain = function() {
+        console.log("The Typpo task queue has been emptied!");
+    }
+
+    myTyppo.write("I'll correct my mistakes while typing this.");
+    myTyppo.pause(2000);
+    myTyppo.enter(2);
+    myTyppo.writeUncorrected("But I won't correct my mistakes while typing this.")
+    myTyppo.backspaceAll(3000);
+    </script>
+
+</body>
+
+</html>
