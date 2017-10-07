@@ -43,13 +43,13 @@ myTyppo.backspaceAll(3000);
 String. The HTML element that Typpo will type into.
 
 **badness**<br>
-Integer. Typpo's overall typing inaccuracy, 0 - 100. 0 is a perfect typist, 100 is a terrible one.
+Number. Typpo's overall typing inaccuracy, 0 - 100. 0 is a perfect typist, 100 is a terrible one.
 
 **speed**<br>
-Integer. Typpo's typing speed, 0 - 100. 0 is very slow, 100 is very fast.
+Number. Typpo's typing speed, 0 - 100. 0 is very slow, 100 is very fast.
 
 **backspaceSpeed**<br>
-Integer. The speed at which Typpo recognizes its errors and deletes them, 0 - 100. 0 is very slow, 100 is very fast.
+Number. The speed at which Typpo recognizes its errors and deletes them, 0 - 100. 0 is very slow, 100 is very fast.
 
 **showCursor**<br>
 Boolean. Determines whether Typpo displays the cursor.
