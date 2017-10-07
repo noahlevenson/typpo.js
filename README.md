@@ -1,4 +1,4 @@
-# typpo.js
+![Typpo.js](https://github.com/noahlevenson/typpo.js/typpo.gif")
 
 Typpo.js is a JavaScript library for procedurally animating lifelike human typing -- random errors, corrections and all.
 
