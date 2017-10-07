@@ -1,6 +1,6 @@
 # typpo.js
 
-Typpo.js is a JavaScript library that can procedurally animate lifelike human typing -- random errors, corrections and all.
+Typpo.js is a JavaScript library for procedurally animating lifelike human typing -- random errors, corrections and all.
 
 Just set some parameters and supply a string, then watch Typpo type it with startling inaccuracy.
 
