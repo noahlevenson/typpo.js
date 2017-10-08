@@ -36,8 +36,7 @@ myTyppo.writeUncorrected("But I won't correct my mistakes while typing this.")
 myTyppo.backspaceAll(3000);
 </script>
 ~~~
-
-
+<br>
 ### The options object
 **element**<br>
 String. The HTML element that Typpo will type into.
@@ -56,8 +55,7 @@ Boolean. Determines whether Typpo displays the cursor.
 
 **cursor**<br>
 String. The character(s) that Typpo will display as its cursor.
-
-
+<br><br>
 ### Methods
 **write(string)**<br>
 Types the specified `string` and corrects errors on the fly.
@@ -76,8 +74,7 @@ Backspaces all text in the Typpo HTML element. The `ttl` parameter is the length
 
 **onDrain**<br>
 This method is called every time the Typpo task queue is emptied. Useful for recursion, etc.
-
-
+<br><br>
 ### Contact
 I'd love to see how you're using Typpo.js. Show me your projects!
 
