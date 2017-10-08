@@ -36,7 +36,7 @@ myTyppo.writeUncorrected("But I won't correct my mistakes while typing this.")
 myTyppo.backspaceAll(3000);
 </script>
 ~~~
-<br>
+
 ### The options object
 **element**<br>
 String. The HTML element that Typpo will type into.
