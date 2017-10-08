@@ -60,10 +60,10 @@ String. The character(s) that Typpo will display as its cursor.
 
 ### Methods
 **write(string)**<br>
-Types the specified string and corrects errors on the fly.
+Types the specified `string` and corrects errors on the fly.
 
 **writeUncorrected(string)**<br>
-Types the specified string and does not correct errors.
+Types the specified `string` and does not correct errors.
 
 **enter(number)**<br>
 Simulates pressing the enter/return key, creating a line break. The `number` parameter is the number of times to press enter. `enter(1)` === `enter()`.
