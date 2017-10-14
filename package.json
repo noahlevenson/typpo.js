@@ -1,0 +1,24 @@
+{
+  "name": "typpo.js",
+  "version": "1.0.0",
+  "description": "A library for procedurally animating lifelike lousy typing",
+  "main": "lib/typpo.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/noahlevenson/typpo.js.git"
+  },
+  "keywords": [
+    "typo",
+    "animation",
+    "typing"
+  ],
+  "author": "Noah Levenson",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/noahlevenson/typpo.js/issues"
+  },
+  "homepage": "https://github.com/noahlevenson/typpo.js#readme"
+}
