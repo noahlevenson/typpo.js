@@ -1,6 +1,6 @@
 {
   "name": "typpo.js",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A library for procedurally animating lifelike derpy typing",
   "main": "dist/typpo.min.js",
   "scripts": {
