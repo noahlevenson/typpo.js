@@ -57,23 +57,23 @@ Boolean. Determines whether Typpo displays the cursor.
 String. The character(s) that Typpo will display as its cursor.
 <br><br>
 ### Methods
-**write(string)**<br>
+`write(string)`<br>
 Types the specified `string` and corrects errors on the fly.
 
-**writeUncorrected(string)**<br>
+`writeUncorrected(string)`<br>
 Types the specified `string` and does not correct errors.
 
-**enter(number)**<br>
+`enter(number)`<br>
 Simulates pressing the enter/return key, creating a line break. The `number` parameter is the number of times to press enter. `enter(1)` === `enter()`.
 
-**pause(time)**<br>
+`pause(time)`<br>
 Inserts a pause into the Typpo task queue, where `time` is the length of time to pause in milliseconds.
 
-**backspaceAll(ttl)**<br>
+`backspaceAll(ttl)`<br>
 Backspaces all text in the Typpo HTML element. The `ttl` parameter is the length of time to wait, in milliseconds, before backspacing.
 
-**onDrain**<br>
-This method is called every time the Typpo task queue is emptied. Useful for recursion, etc.
+`onDrain`<br>
+This method is called every time the Typpo task queue is emptied.
 <br><br>
 ### Contact
 I'd love to see how you're using Typpo.js. Show me your projects!
